@@ -72,6 +72,17 @@ std::string format(const char* fmt, ...) {
     return std::string(buf.data(), size);
 }
 
+int round_up_to(int value, int base) {
+    if (base <= 0) {
+        return value;
+    }
+    if (value % base == 0) {
+        return value;
+    } else {
+        return ((value / base) + 1) * base;
+    }
+}
+
 #ifdef _WIN32  // code for windows
 #include <windows.h>
 
@@ -112,7 +123,7 @@ std::vector<std::string> get_files_from_dir(const std::string& dir) {
     sprintf(directoryPath, "%s\\%s\\*", currentDirectory, dir.c_str());
 
     // Find the first file in the directory
-    hFind = FindFirstFile(directoryPath, &findFileData);
+    hFind               = FindFirstFile(directoryPath, &findFileData);
     bool isAbsolutePath = false;
     // Check if the directory was found
     if (hFind == INVALID_HANDLE_VALUE) {
@@ -121,7 +132,7 @@ std::vector<std::string> get_files_from_dir(const std::string& dir) {
         char directoryPathAbsolute[MAX_PATH];
         sprintf(directoryPathAbsolute, "%s*", dir.c_str());
 
-        hFind = FindFirstFile(directoryPathAbsolute, &findFileData);
+        hFind          = FindFirstFile(directoryPathAbsolute, &findFileData);
         isAbsolutePath = true;
         if (hFind == INVALID_HANDLE_VALUE) {
             printf("Absolute path was also wrong.\n");
@@ -290,7 +301,7 @@ std::string path_join(const std::string& p1, const std::string& p2) {
     return p1 + "/" + p2;
 }
 
-std::vector<std::string> splitString(const std::string& str, char delimiter) {
+std::vector<std::string> split_string(const std::string& str, char delimiter) {
     std::vector<std::string> result;
     size_t start = 0;
     size_t end   = str.find(delimiter);
@@ -439,10 +450,6 @@ const char* sd_get_system_info() {
     ss << "    VSX = " << ggml_cpu_has_vsx() << std::endl;
     snprintf(buffer, sizeof(buffer), "%s", ss.str().c_str());
     return buffer;
-}
-
-const char* sd_type_name(enum sd_type_t type) {
-    return ggml_type_name((ggml_type)type);
 }
 
 sd_image_f32_t sd_image_t_to_sd_image_f32_t(sd_image_t image) {
